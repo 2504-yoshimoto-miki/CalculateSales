@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CalculateSales {
@@ -37,6 +39,44 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
+		File[] files = new File(args[0]).listFiles();
+
+		List<File> rcdFiles = new ArrayList<>();
+
+		for(int i = 0; i < files.length ; i++) {
+			if(files[i].getName().matches("^[0-9]{8}[.]rcd$")) {
+				rcdFiles.add(files[i]);
+			}
+		}
+
+		//売上ファイルの読み込み(処理内容2-2)
+		BufferedReader br = null;
+		for(int i = 0; i < rcdFiles.size(); i++) {
+			ArrayList fileContents = new ArrayList();
+
+			try {
+			File file = rcdFiles.get(i);
+			FileReader fr = new FileReader(file);
+			br = new BufferedReader(fr);
+
+			String line;
+			while((line = br.readLine()) != null) {
+				fileContents.add(line);
+			}
+
+			System.out.println(UNKNOWN_ERROR);
+
+//			long fileSale = Long.parseLong();
+//			Long saleAmount = branchSales.get() + fileSale;
+			} catch(IOException e) {
+				System.out.println(UNKNOWN_ERROR);
+				return;
+			}
+
+
+		}
+
+
 
 
 
@@ -60,6 +100,7 @@ public class CalculateSales {
 		BufferedReader br = null;
 
 		try {
+			//デスクトップにあるテキストを File型のオブジェクトにする
 			File file = new File(path, fileName);
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
@@ -68,6 +109,10 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				String[] items = line.split(",");
+
+			branchNames.put(items[0],items[1]);
+			branchSales.put(items[0],0L);
 				System.out.println(line);
 			}
 
