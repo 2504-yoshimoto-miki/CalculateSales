@@ -23,8 +23,6 @@ public class CalculateSales {
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
-	private static final String FILE_NOT_SEQUENCE = "売上ファイル名が連番になっていません";
-	private static final String TOTAL_OVER_10_DIGITS = "合計⾦額が10桁を超えました";
 
 
 	/**
@@ -57,18 +55,6 @@ public class CalculateSales {
 			}
 		}
 
-		//エラー処理2-1
-		for(int i = 0; i < rcdFiles.size() - 1; i++) {
-
-			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
-			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
-			if((latter - former) != 1) {
-				System.out.println(FILE_NOT_SEQUENCE);
-				return;
-			}
-		}
-
-
 
 		//売上ファイルの読み込み(処理内容2-2)
 		BufferedReader br = null;
@@ -84,23 +70,11 @@ public class CalculateSales {
 			while((line = br.readLine()) != null) {
 				fileContents.add(line);
 			}
-			//エラー処理2
-			if(fileContents.size() != 2) {
-				System.out.println();
-				return;
-			}
 
 			long fileSale = Long.parseLong(fileContents.get(1));
 			Long saleAmount = branchSales.get(fileContents.get(0)) + fileSale;
-			//エラー処理2
-			if(saleAmount >= 10000000000L){
-				System.out.println(TOTAL_OVER_10_DIGITS);
-				return;
-			}
 
 			branchSales.put(fileContents.get(0),saleAmount);
-
-
 
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
@@ -115,14 +89,13 @@ public class CalculateSales {
 				}
 			}
 		}
+	}
 
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
-	}
-
 	}
 
 	/**
@@ -137,15 +110,9 @@ public class CalculateSales {
 	private static boolean readFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		BufferedReader br = null;
 
-		//エラー処理1
-		File file = new File(path, fileName);
-		if(!file.exists()) {
-			System.out.println(FILE_NOT_EXIST);
-			return true;
-			}
-
 		try {
 			//デスクトップにあるテキストを File型のオブジェクトにする
+			File file = new File(path, fileName);
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
@@ -155,15 +122,8 @@ public class CalculateSales {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
 
-				//エラー処理1
-				if((items.length != 2) || (!items[0].matches("^[0-9]{3}$"))){
-					System.out.println(FILE_INVALID_FORMAT);
-					return true;
-				}
-
 			branchNames.put(items[0],items[1]);
 			branchSales.put(items[0],0L);
-
 			}
 
 		} catch(IOException e) {
@@ -206,10 +166,7 @@ public class CalculateSales {
 			for (String key : branchNames.keySet()) {
 				bw.write(key +"," + branchNames.get(key) + "," + branchSales.get(key));
 				bw.newLine();
-
 			}
-
-
 
 		}catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
