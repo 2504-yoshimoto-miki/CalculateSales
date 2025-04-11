@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,10 @@ public class CalculateSales {
 	 */
 	public static void main(String[] args) {
 		//エラー処理3
-			if (args.length != 1) {
-				System.out.println(UNKNOWN_ERROR);
-				return;
-			}
+		if (args.length != 1) {
+			System.out.println(UNKNOWN_ERROR);
+			return;
+		}
 
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
@@ -60,6 +61,7 @@ public class CalculateSales {
 				rcdFiles.add(files[i]);
 			}
 		}
+		Collections.sort(rcdFiles);
 
 		//エラー処理2-1
 		for (int i = 0; i < rcdFiles.size() - 1; i++) {
